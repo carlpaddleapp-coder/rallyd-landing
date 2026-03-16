@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rallyd — Score Every Rally. From Your Wrist.</title>
+<meta name="description" content="The racket sport scoring app for Apple Watch. Track tennis, padel, badminton, squash, and pickleball with individual player stats. Free on iPhone + Apple Watch.">
+<meta property="og:title" content="Rallyd — Score Every Rally. From Your Wrist.">
+<meta property="og:description" content="The racket sport scoring app for Apple Watch. Track tennis, padel, badminton, squash, and pickleball with individual player stats.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://rallyd.app">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://rallyd.app">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon: #39FF14;
+    --neon-dim: rgba(57, 255, 20, 0.15);
+    --neon-glow: rgba(57, 255, 20, 0.4);
+    --bg: #0A0A0B;
+    --bg-elevated: #141416;
+    --bg-card: #1A1A1E;
+    --text-primary: #F5F5F0;
+    --text-secondary: #8A8A8E;
+    --text-dim: #5A5A5E;
+    --p1-green: #39FF14;
+    --p2-blue: #4A9EFF;
+    --p3-amber: #FFB84A;
+    --p4-purple: #B44AFF;
+    --font-display: 'Space Mono', monospace;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  .ambient {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .ambient::before {
+    content: '';
+    position: absolute;
+    top: -30%; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(ellipse, var(--neon-dim) 0%, transparent 70%);
+    opacity: 0.5;
+    animation: pulse-ambient 8s ease-in-out infinite;
+  }
+  .ambient::after {
+    content: '';
+    position: absolute;
+    bottom: -20%; right: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(ellipse, rgba(74, 158, 255, 0.08) 0%, transparent 70%);
+    animation: pulse-ambient 10s ease-in-out infinite reverse;
+  }
+  @keyframes pulse-ambient {
+    0%, 100% { opacity: 0.3; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.6; transform: translateX(-50%) scale(1.1); }
+  }
+
+  /* Grain overlay */
+  .grain {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .page { position: relative; z-index: 2; }
+
+  /* Nav */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--neon);
+    letter-spacing: -0.5px;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a {
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text-primary); }
+  .nav-cta {
+    background: var(--neon) !important;
+    color: var(--bg) !important;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px !important;
+    transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 80px 24px 60px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--neon-dim);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--neon);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeInUp 0.6s ease-out;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 7vw, 56px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.6s ease-out 0.1s both;
+  }
+  .hero h1 .accent { color: var(--neon); }
+  .hero p {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto 36px;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Score Demo */
+  .score-demo {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 28px 32px;
+    max-width: 340px;
+    margin: 0 auto 60px;
+    animation: fadeInUp 0.6s ease-out 0.3s both;
+  }
+  .score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .score-sport {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .score-badge {
+    font-family: var(--font-display);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--p3-amber);
+    color: var(--p3-amber);
+    transition: all 0.4s ease;
+  }
+  .score-players {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  .score-player { text-align: center; flex: 1; }
+  .score-name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .score-name.p1 { color: var(--p1-green); }
+  .score-name.p2 { color: var(--p2-blue); }
+  .score-value {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    transition: opacity 0.3s ease;
+  }
+  .score-vs {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .score-meta {
+    text-align: center;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .score-set {
+    font-family: var(--font-display);
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  /* Features */
+  .features {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  .features h2 {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 48px;
+    letter-spacing: -1px;
+  }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 16px;
+    padding: 28px 24px;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .feature-card:hover {
+    border-color: rgba(57, 255, 20, 0.15);
+    transform: translateY(-2px);
+  }
+  .feature-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .feature-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .feature-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Sports */
+  .sports {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    text-align: center;
+  }
+  .sports h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+  .sports .subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+  }
+  .sport-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .sport-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 40px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: border-color 0.3s;
+  }
+  .sport-pill:hover { border-color: rgba(57, 255, 20, 0.15); }
+  .sport-icon { font-size: 22px; }
+  .sport-icon svg { width: 22px; height: 22px; vertical-align: middle; }
+
+  /* Beta Section */
+  .beta {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    text-align: center;
+  }
+  .beta-card {
+    background: linear-gradient(135deg, rgba(57, 255, 20, 0.06) 0%, rgba(74, 158, 255, 0.04) 100%);
+    border: 1px solid rgba(57, 255, 20, 0.15);
+    border-radius: 24px;
+    padding: 48px 32px;
+  }
+  .beta-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: rgba(255, 184, 74, 0.15);
+    border: 1px solid rgba(255, 184, 74, 0.3);
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--p3-amber);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .beta h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: -1px;
+  }
+  .beta p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .beta-btn {
+    display: inline-block;
+    padding: 14px 36px;
+    background: var(--neon);
+    color: var(--bg);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    border-radius: 28px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .beta-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .beta-perks {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .beta-perk {
+    font-size: 13px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .beta-perk .check { color: var(--neon); font-weight: 700; }
+
+  /* Email signup */
+  .signup {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    text-align: center;
+  }
+  .signup h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+  }
+  .signup .subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+  }
+  .signup-form {
+    display: flex;
+    gap: 10px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .signup-form input {
+    flex: 1;
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .signup-form input::placeholder { color: var(--text-dim); }
+  .signup-form input:focus { border-color: var(--neon); }
+  .signup-form button {
+    padding: 14px 24px;
+    background: var(--neon);
+    color: var(--bg);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .signup-form button:hover { opacity: 0.85; }
+  .signup-success {
+    display: none;
+    color: var(--neon);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px;
+  }
+  .signup-note {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 14px;
+  }
+
+  /* App Store placeholder */
+  .app-store-section {
+    text-align: center;
+    padding: 0 24px 60px;
+  }
+  .app-store-badge {
+    display: inline-block;
+    padding: 14px 32px;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  footer {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    font-size: 13px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--text-secondary); }
+  .footer-copy {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .nav-links { gap: 14px; }
+    .nav-links a:not(.nav-cta) { display: none; }
+    .hero { padding: 50px 20px 40px; }
+    .hero h1 { letter-spacing: -1px; }
+    .score-demo { margin: 0 16px 50px; padding: 24px 20px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .sport-row { gap: 10px; }
+    .sport-pill { padding: 12px 18px; font-size: 14px; }
+    .signup-form { flex-direction: column; }
+    .beta-card { padding: 36px 24px; }
+    .beta-perks { flex-direction: column; gap: 12px; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<div class="page">
+
+  <nav>
+    <a href="/" class="logo">rallyd</a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#sports">Sports</a>
+      <a href="#beta" class="nav-cta">Join the Beta</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">Now in Beta</div>
+    <h1>Score Every Rally.<br><span class="accent">From Your Wrist.</span></h1>
+    <p>The racket sport scoring app for Apple Watch. Individual player stats across tennis, padel, badminton, squash, and pickleball. One tap scoring, real-time fitness tracking, and a social layer that keeps you competing.</p>
+  </section>
+
+  <!-- Score Demo -->
+  <div class="score-demo">
+    <div class="score-header">
+      <span class="score-sport">Padel &middot; Doubles</span>
+      <span class="score-badge">Match Point</span>
+    </div>
+    <div class="score-players">
+      <div class="score-player">
+        <div class="score-name p1">Carl &amp; Alex</div>
+        <div class="score-value" id="score-p1">40</div>
+      </div>
+      <div class="score-vs">vs</div>
+      <div class="score-player">
+        <div class="score-name p2">Maya &amp; Rui</div>
+        <div class="score-value" id="score-p2">30</div>
+      </div>
+    </div>
+    <div class="score-meta">
+      <span class="score-set">6-4 &middot; 5-4</span>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <h2>Built for the court</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <span class="feature-icon">&#x2328;&#xFE0F;</span>
+        <h3>One-Tap Scoring</h3>
+        <p>Score from your wrist mid-rally. Large tap zones, haptic feedback, and automatic server tracking across all five sports.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#x1F4CA;</span>
+        <h3>Individual Player Stats</h3>
+        <p>Every point attributed to the player who won it. See your personal win rate, clutch performance, and per-sport breakdowns — even in doubles.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#x2764;&#xFE0F;</span>
+        <h3>Fitness Tracking</h3>
+        <p>Heart rate, calories, shots detected, and steps — all captured via Apple Watch during your match. Your workout, logged automatically.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#x1F3C6;</span>
+        <h3>Leaderboards</h3>
+        <p>Compete with friends and your local community. Per-sport rankings updated automatically as you play.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#x1F465;</span>
+        <h3>Social Feed</h3>
+        <p>Follow friends, see their match results, and react to great performances. Your racket sport social network.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#x1F3BE;</span>
+        <h3>Five Sports, One App</h3>
+        <p>Tennis, padel, badminton, squash, and pickleball — with sport-specific scoring rules, deuce options, and match formats built in.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sports -->
+  <section class="sports" id="sports">
+    <h2>Every racket sport</h2>
+    <p class="subtitle">Full scoring rules for each sport. Advantage, golden point, star point — all handled.</p>
+    <div class="sport-row">
+      <div class="sport-pill"><span class="sport-icon">&#x1F3BE;</span> Tennis</div>
+      <div class="sport-pill">
+        <span class="sport-icon">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="38" rx="22" ry="30" stroke="currentColor" stroke-width="5" fill="none"/>
+            <line x1="50" y1="68" x2="50" y2="96" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+            <line x1="36" y1="30" x2="64" y2="30" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+            <line x1="34" y1="42" x2="66" y2="42" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+          </svg>
+        </span> Padel
+      </div>
+      <div class="sport-pill"><span class="sport-icon">&#x1F3F8;</span> Badminton</div>
+      <div class="sport-pill"><span class="sport-icon">&#x1F3D1;</span> Squash</div>
+      <div class="sport-pill"><span class="sport-icon">&#x1F3D3;</span> Pickleball</div>
+    </div>
+  </section>
+
+  <!-- Beta Signup -->
+  <section class="beta" id="beta">
+    <div class="beta-card">
+      <div class="beta-badge">Limited Spots</div>
+      <h2>Join the Beta</h2>
+      <p>We're handpicking a small group of testers across all five sports. Get early access via TestFlight, 3 months of Rallyd Pro completely free, and a direct line to shape the app before launch.</p>
+      <!-- REPLACE THIS URL with your actual Google Form link -->
+      <a href="https://forms.gle/pp6Dbv9s7a9PHV718" target="_blank" class="beta-btn">Apply for Beta Access</a>
+      <div class="beta-perks">
+        <span class="beta-perk"><span class="check">&#x2713;</span> 3 months Pro free</span>
+        <span class="beta-perk"><span class="check">&#x2713;</span> Early TestFlight access</span>
+        <span class="beta-perk"><span class="check">&#x2713;</span> Direct input on features</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Email Signup -->
+  <section class="signup">
+    <h2>Not ready for beta?</h2>
+    <p class="subtitle">Drop your email and we'll let you know when we launch.</p>
+    <div class="signup-form" id="main-form">
+      <input type="email" id="main-email" placeholder="you@email.com" />
+      <button onclick="handleSignup('main')">Notify Me</button>
+    </div>
+    <div class="signup-success" id="main-success">You're on the list. We'll be in touch.</div>
+    <p class="signup-note">Free to use. Launching on iPhone + Apple Watch.</p>
+  </section>
+
+  <!-- App Store badge placeholder -->
+  <div class="app-store-section" id="download" style="display:none;">
+    <!-- Unhide this section and add the real App Store link when approved -->
+    <a href="https://apps.apple.com/app/rallyd/idXXXXXXXXXX" target="_blank">
+      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" height="50">
+    </a>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://tiktok.com/@rallyd" target="_blank">TikTok</a>
+      <a href="https://instagram.com/rallyd.app" target="_blank">Instagram</a>
+      <a href="mailto:hello@rallyd.app">Contact</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 Rallyd. All rights reserved.</div>
+  </footer>
+
+</div>
+
+<script>
+  function handleSignup(location) {
+    const emailInput = document.getElementById(location + '-email');
+    const form = document.getElementById(location + '-form');
+    const success = document.getElementById(location + '-success');
+    const email = emailInput.value.trim();
+
+    if (!email || !email.includes('@')) {
+      emailInput.style.borderColor = '#ff4444';
+      setTimeout(() => emailInput.style.borderColor = '', 2000);
+      return;
+    }
+
+    // TODO: Replace with actual API call to your email list provider
+    console.log('Signup:', email);
+    form.style.display = 'none';
+    success.style.display = 'block';
+  }
+
+  // Score animation
+  const scores = [
+    { p1: '40', p2: '30', badge: 'Match Point', badgeColor: '#FFB84A' },
+    { p1: '15', p2: '15', badge: 'First Set', badgeColor: '#5A5A5E' },
+    { p1: 'AD', p2: '40', badge: 'Break Point', badgeColor: '#B44AFF' },
+    { p1: '40', p2: '40', badge: 'Deuce', badgeColor: '#8A8A8E' },
+    { p1: '30', p2: '40', badge: 'Set Point', badgeColor: '#4A9EFF' },
+  ];
+  let scoreIndex = 0;
+
+  setInterval(() => {
+    scoreIndex = (scoreIndex + 1) % scores.length;
+    const s = scores[scoreIndex];
+    const p1El = document.getElementById('score-p1');
+    const p2El = document.getElementById('score-p2');
+    const badge = document.querySelector('.score-badge');
+
+    p1El.style.opacity = 0;
+    p2El.style.opacity = 0;
+    badge.style.opacity = 0;
+
+    setTimeout(() => {
+      p1El.textContent = s.p1;
+      p2El.textContent = s.p2;
+      badge.textContent = s.badge;
+      badge.style.borderColor = s.badgeColor;
+      badge.style.color = s.badgeColor;
+      p1El.style.opacity = 1;
+      p2El.style.opacity = 1;
+      badge.style.opacity = 1;
+    }, 400);
+  }, 4000);
+</script>
+
+</body>
+</html>
