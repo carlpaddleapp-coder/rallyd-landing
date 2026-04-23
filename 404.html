@@ -1,1 +1,74 @@
 
+ <!DOCTYPE html>                                                                                                         
+  <html lang="en">                                                
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rallyd</title>                                                                                                   
+  <meta property="og:title" content="Rallyd Match">
+  <meta property="og:description" content="Open in Rallyd to view this match.">                                           
+  <meta property="og:image" content="https://rallyd.app/og-image.png">
+  <meta property="og:type" content="website">                                                                             
+  <meta name="twitter:card" content="summary_large_image">        
+  <style>                                                                                                                 
+    :root { color-scheme: dark; }                                 
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }                             
+    body { background: #0A0E0A; color: #fff; font-family: -apple-system, system-ui, sans-serif; min-height: 100vh;        
+  display: flex; align-items: center; justify-content: center; padding: 24px; }                                           
+    .card { max-width: 420px; width: 100%; text-align: center; }                                                          
+    .logo { font-size: 56px; font-weight: 800; color: #39FF14; letter-spacing: -2px; margin-bottom: 12px; }               
+    .title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }                                                     
+    .subtitle { font-size: 16px; color: rgba(255,255,255,0.65); margin-bottom: 32px; line-height: 1.5; }                  
+    .btn { display: block; width: 100%; padding: 16px; border-radius: 14px; font-size: 17px; font-weight: 600;            
+  text-decoration: none; margin-bottom: 12px; transition: opacity 0.2s; }                                                 
+    .btn:active { opacity: 0.7; }                                                                                         
+    .btn-primary { background: #39FF14; color: #000; }                                                                    
+    .btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.12); }
+    .footer { margin-top: 40px; font-size: 13px; color: rgba(255,255,255,0.4); }                                          
+  </style>                                                                                                                
+  </head>                                                                                                                 
+  <body>                                                                                                                  
+  <div class="card">                                              
+    <div class="logo">Rallyd</div>
+    <h1 class="title" id="title">Open in Rallyd</h1>                                                                      
+    <p class="subtitle" id="subtitle">Tap below to open this match in the Rallyd app.</p>
+    <a class="btn btn-primary" id="open-app" href="#">Open in Rallyd</a>                                                  
+    <a class="btn btn-secondary" href="https://apps.apple.com/app/rallyd/id6504567890">Get Rallyd on the App Store</a>    
+    <p class="footer">Rallyd — Score. Track. Compete.</p>                                                                 
+  </div>                                                                                                                  
+  <script>                                                                                                                
+  (function(){                                                                                                            
+    var path = window.location.pathname;                          
+    var matchMatch = path.match(/^\/match\/([^/]+)/);                                                                     
+    var inviteMatch = path.match(/^\/invite\/([^/]+)/);
+    var profileMatch = path.match(/^\/profile\/([^/]+)/);                                                                 
+    var deepLink = null;                                          
+    var titleEl = document.getElementById('title');                                                                       
+    var subtitleEl = document.getElementById('subtitle');                                                                 
+    var openBtn = document.getElementById('open-app');
+                                                                                                                          
+    if (matchMatch) {                                             
+      deepLink = 'rallyd://match/' + encodeURIComponent(matchMatch[1]);                                                   
+      titleEl.textContent = 'Open this match';                                                                            
+      subtitleEl.textContent = 'View the full scorecard, stats, and momentum chart in Rallyd.';
+    } else if (inviteMatch) {                                                                                             
+      deepLink = 'rallyd://invite/' + encodeURIComponent(inviteMatch[1]);                                                 
+      titleEl.textContent = 'You have a match invite';                                                                    
+      subtitleEl.textContent = 'Open Rallyd to claim your match and update your stats.';                                  
+    } else if (profileMatch) {                                                                                            
+      deepLink = 'rallyd://profile/' + encodeURIComponent(profileMatch[1]);                                               
+      titleEl.textContent = 'View this profile';                                                                          
+      subtitleEl.textContent = 'See their match history and stats in Rallyd.';
+    } else {                                                                                                              
+      titleEl.textContent = 'Page not found';                     
+      subtitleEl.textContent = "We couldn't find what you're looking for.";                                               
+      openBtn.style.display = 'none';                             
+      return;                                                                                                             
+    }                                                             
+                                                                                                                          
+    openBtn.href = deepLink;                                      
+    setTimeout(function(){ window.location.href = deepLink; }, 250);
+  })();                                                                                                                   
+  </script>
+  </body>                                                                                                                 
+  </html>         
