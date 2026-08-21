@@ -1,21 +1,13 @@
-                                                                                                                         
-  {                                                                                                                       
-    "applinks": {
-      "apps": [],
-      "details": [
-        {
-          "appID": "2DAQJ9Y8RF.com.carlblack.Rallyd",
-          "paths": [                                                                                                      
-            "/match/*",
-            "/invite/*",                                                                                                  
-            "/profile/*"                                                                                                  
-          ]
-        }                                                                                                                 
-      ]                                                           
-    },
-    "webcredentials": {
-      "apps": [                                                                                                           
-        "2DAQJ9Y8RF.com.carlblack.Rallyd"
-      ]                                                                                                                   
-    }                                                             
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["2DAQJ9Y8RF.app.rallyd.ios"],
+        "components": [
+          { "/": "/m/*", "comment": "shared match links — view + guest claim" },
+          { "/": "/g/*", "comment": "group invite links (app handles from 1.0.1)" }
+        ]
+      }
+    ]
   }
+}
