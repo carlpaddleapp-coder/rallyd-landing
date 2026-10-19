@@ -1,0 +1,54 @@
+# Prepared hosting configuration; nothing deploys until Carl connects/publishes.
+# GitHub Pages ignores this file and cannot provide these custom response headers.
+[build]
+  command = "sh scripts/prepare-site.sh"
+  publish = "_site"
+
+[[redirects]]
+  from = "/m/*"
+  to = "/share/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/g/*"
+  to = "/share/index.html"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/.well-known/apple-app-site-association"
+  [headers.values]
+    Content-Type = "application/json"
+    Cache-Control = "public, max-age=300"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/.well-known/assetlinks.json"
+  [headers.values]
+    Content-Type = "application/json"
+    Cache-Control = "public, max-age=300"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Referrer-Policy = "no-referrer"
+    X-Content-Type-Options = "nosniff"
+
+# Same policy for the source URL and the rewritten destination; the HTML also
+# has an equivalent meta policy for GitHub's legacy 404 fallback.
+[[headers]]
+  for = "/m/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+
+[[headers]]
+  for = "/g/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+
+[[headers]]
+  for = "/share/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
