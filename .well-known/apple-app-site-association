@@ -1,21 +1,27 @@
-                                                                                                                         
-  {                                                                                                                       
-    "applinks": {
-      "apps": [],
-      "details": [
-        {
-          "appID": "2DAQJ9Y8RF.com.carlblack.Rallyd",
-          "paths": [                                                                                                      
-            "/match/*",
-            "/invite/*",                                                                                                  
-            "/profile/*"                                                                                                  
-          ]
-        }                                                                                                                 
-      ]                                                           
-    },
-    "webcredentials": {
-      "apps": [                                                                                                           
-        "2DAQJ9Y8RF.com.carlblack.Rallyd"
-      ]                                                                                                                   
-    }                                                             
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "2DAQJ9Y8RF.app.rallyd.ios",
+        "paths": [
+          "/m/*",
+          "/g/*"
+        ]
+      },
+      {
+        "appID": "2DAQJ9Y8RF.com.carlblack.Rallyd",
+        "paths": [
+          "/match/*",
+          "/invite/*",
+          "/profile/*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "2DAQJ9Y8RF.com.carlblack.Rallyd"
+    ]
   }
+}
