@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
   <title>Page not found — Rallyd</title>
   <style>
     :root { color-scheme: dark; }
@@ -33,11 +33,13 @@
     <section id="link-actions" hidden aria-label="Open the Rallyd app">
       <a class="button" id="open-app">Open in Rallyd</a>
       <a class="button secondary" href="https://apps.apple.com/app/id6777384063" rel="noreferrer">Get Rallyd on the App Store</a>
+      <p class="note" id="install-note"></p>
       <p class="note">Android is currently in private testing. Ask the person who invited you for the Android tester pack.</p>
     </section>
     <noscript><p>To open a shared match or group, enable JavaScript and reload this page, or open Rallyd directly.</p></noscript>
     <a class="home" href="/" rel="noreferrer">Back to Rallyd</a>
   </main>
+  <script src="/ShareLinkStrings.js"></script>
   <script>
     (function () {
       // Only known single-ID routes may create an app link. Never render IDs or
@@ -45,14 +47,22 @@
       var route = window.location.pathname.match(/^\/(m|g)\/([A-Za-z0-9_-]+)\/?$/);
       if (!route) return;
 
-      document.title = 'Open in Rallyd';
-      document.getElementById('title').textContent = 'Open in Rallyd';
-      document.getElementById('description').textContent = route[1] === 'm'
-        ? 'Open the app to view this shared match.'
-        : 'Open the app to view this group invitation.';
-      // Keep the original fragment in the local app hand-off only.
-      document.getElementById('open-app').href = 'rallyd://' + route[1] + '/' + route[2] + window.location.hash;
-      document.getElementById('link-actions').hidden = false;
+      function refreshInvitation() {
+        var claiming = route[1] === 'm' && /(?:^#|&)(?:claim|invite)=[^&]+/.test(window.location.hash);
+        var title = claiming ? ShareLinkStrings.claimTitle : ShareLinkStrings.openTitle;
+        document.title = title;
+        document.getElementById('title').textContent = title;
+        document.getElementById('description').textContent = claiming
+          ? ShareLinkStrings.claimDescription
+          : (route[1] === 'm' ? ShareLinkStrings.matchDescription : ShareLinkStrings.groupDescription);
+        document.getElementById('install-note').textContent = ShareLinkStrings.installInstructions;
+        // Keep the current fragment in the local app hand-off only. A replacement
+        // invite for this match can change only the hash, without reloading Pages.
+        document.getElementById('open-app').href = 'rallyd://' + route[1] + '/' + route[2] + window.location.hash;
+        document.getElementById('link-actions').hidden = false;
+      }
+      refreshInvitation();
+      window.addEventListener('hashchange', refreshInvitation);
     })();
   </script>
 </body>

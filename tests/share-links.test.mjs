@@ -29,16 +29,17 @@ test('Android association contains the exact release and debug signers', () => {
 
 function render(pathname, hash = '', search = '') {
   const html = read('404.html');
-  const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)];
   assert.equal(scripts.length, 1, 'one local inline script');
   const elements = new Map([...html.matchAll(/id="([^"]+)"/g)].map(([, id]) => [id, {
     hidden: new RegExp(`id="${id}"[^>]*\\bhidden\\b`).test(html),
     textContent: '', href: undefined,
   }]));
   const noNetwork = () => { throw new Error('Fallback must not use network or automatic navigation'); };
-  const location = Object.freeze({ pathname, hash, search });
-  runInNewContext(scripts[0][1], {
-    window: Object.freeze({ location }),
+  const location = { pathname, hash, search };
+  const listeners = new Map();
+  runInNewContext(read('ShareLinkStrings.js') + '\n' + scripts[0][1], {
+    window: Object.freeze({ location, addEventListener: (name, callback) => listeners.set(name, callback) }),
     document: { title: '', getElementById: id => {
       assert.ok(elements.has(id), `known element: ${id}`);
       return elements.get(id);
@@ -46,7 +47,7 @@ function render(pathname, hash = '', search = '') {
     fetch: noNetwork, XMLHttpRequest: noNetwork, WebSocket: noNetwork,
     setTimeout: noNetwork, setInterval: noNetwork,
   });
-  return { html, elements };
+  return { html, elements, changeFragment: hash => { location.hash = hash; listeners.get('hashchange')?.(); } };
 }
 
 for (const [name, pathname, hash, expected] of [
@@ -83,7 +84,8 @@ test('fallback has no third-party resources, data fetches, redirects or HTML inj
   assert.match(html, /connect-src 'none'/);
   assert.match(html, /https:\/\/apps\.apple\.com\/app\/id6777384063/);
   assert.match(html, /Android.*test/i);
-  assert.doesNotMatch(html, /<(?:script|img|iframe|link)\b[^>]*(?:src|href)=/i);
+  assert.deepEqual([...html.matchAll(/<script\b[^>]*src="([^"]+)"/gi)].map(m => m[1]), ['/ShareLinkStrings.js']);
+  assert.doesNotMatch(html, /<(?:img|iframe|link)\b[^>]*(?:src|href)=/i);
   assert.doesNotMatch(html, /fetch\s*\(|XMLHttpRequest|WebSocket|sendBeacon|analytics|innerHTML|document\.write|location\.(?:href|assign|replace)\s*(?:=|\()/i);
 });
 
@@ -93,4 +95,27 @@ test('README records publication, Apple/Google validation and the physical iPhon
     'digital-asset-links/tools/generator', 'Notes', 'Cloudflare Pages', 'NOT RUN']) {
     assert.ok(readme.includes(phrase), phrase);
   }
+});
+
+test('opening a replacement invitation on the same page uses the new fragment', () => {
+  const { elements, changeFragment } = render('/m/example-match', '#invite=first-fixture');
+  changeFragment('#invite=replacement-fixture');
+  assert.equal(elements.get('open-app').href, 'rallyd://m/example-match#invite=replacement-fixture');
+  changeFragment('');
+  assert.equal(elements.get('open-app').href, 'rallyd://m/example-match');
+  assert.equal(elements.get('title').textContent, 'Open in Rallyd');
+  assert.ok(![...elements.values()].some(el => /first-fixture|replacement-fixture/.test(el.textContent)));
+});
+
+test('claim invitations explain first-time account setup without requiring prior sign-in', () => {
+  for (const fragment of ['#invite=example-only', '#claim=example-only']) {
+    const { elements } = render('/m/example-match', fragment);
+    assert.equal(elements.get('title').textContent, 'Claim your match history');
+    assert.match(elements.get('description').textContent, /sign in or create an account/);
+  }
+});
+
+test('installation guidance tells guests to return to their invitation', () => {
+  const { elements } = render('/m/example-match', '#invite=example-only');
+  assert.match(elements.get('install-note').textContent, /Install the app, then return here and tap Open in Rallyd/);
 });

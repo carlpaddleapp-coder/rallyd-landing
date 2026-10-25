@@ -29,6 +29,20 @@ Pages. The page also disables referrers and network connections with a CSP.
 Never put claim credentials in query strings, analytics, screenshots or logs.
 These files do not implement or release the future claim-all app/backend feature.
 
+## First-time guests and replacement invitations
+
+The claim/invite fallback explains that guests can sign in **or create an account**;
+there is no requirement to be signed in before receiving an invitation. If Rallyd
+is not installed, install it first, then return to the same invitation and tap
+**Open in Rallyd**. The website does not perform sign-in or redeem the invitation.
+The app retains the link through sign-in and account setup.
+
+Opening a replacement invitation for the same match may change only the browser
+fragment. The fallback refreshes its button on `hashchange`, including when the
+fragment is removed, so it cannot keep handing off the previous invitation.
+Page wording lives in the local `ShareLinkStrings.js`; it contains no credentials.
+Ship this file alongside `404.html`. No third-party scripts are loaded.
+
 ## Local validation
 
 No dependencies, SDKs or app builds are needed:
@@ -111,7 +125,7 @@ declare the matching verified intent filters and signing certificate.
 
 ### 4. Real-iPhone tap test (Carl, required)
 
-1. On an iPhone with the intended Rallyd build installed (1.2 (20)), paste
+1. On an iPhone with the intended Rallyd build installed (DEV acceptance: 1.2 (22)), paste
    `https://rallyd.app/m/link-check-only` and
    `https://rallyd.app/g/link-check-only` into **Notes** or a message.
 2. Long-press each link. Expect an option to open in Rallyd; choose it, then tap
