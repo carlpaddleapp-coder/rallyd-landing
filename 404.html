@@ -32,9 +32,9 @@
     <p id="description">We couldn't find that page. Head back to Rallyd's home page.</p>
     <section id="link-actions" hidden aria-label="Open the Rallyd app">
       <a class="button" id="open-app">Open in Rallyd</a>
-      <a class="button secondary" href="https://apps.apple.com/app/id6777384063" rel="noreferrer">Get Rallyd on the App Store</a>
+      <a class="button secondary" id="apple-download" href="https://apps.apple.com/app/id6777384063" rel="noreferrer">Get Rallyd on the App Store</a>
       <p class="note" id="install-note"></p>
-      <p class="note">Android is currently in private testing. Ask the person who invited you for the Android tester pack.</p>
+      <p class="note" id="android-note">Android is currently in private testing.</p>
     </section>
     <noscript><p>To open a shared match or group, enable JavaScript and reload this page, or open Rallyd directly.</p></noscript>
     <a class="home" href="/" rel="noreferrer">Back to Rallyd</a>
@@ -55,7 +55,14 @@
         document.getElementById('description').textContent = claiming
           ? ShareLinkStrings.claimDescription
           : (route[1] === 'm' ? ShareLinkStrings.matchDescription : ShareLinkStrings.groupDescription);
-        document.getElementById('install-note').textContent = ShareLinkStrings.installInstructions;
+        var agent = navigator.userAgent || '';
+        var android = /Android/i.test(agent);
+        document.getElementById('apple-download').hidden = android;
+        document.getElementById('android-note').hidden = /iPhone|iPad|iPod/i.test(agent);
+        document.getElementById('android-note').textContent = ShareLinkStrings.androidAvailability;
+        document.getElementById('install-note').textContent = android
+          ? ShareLinkStrings.androidInstructions
+          : ShareLinkStrings.installInstructions;
         // Keep the current fragment in the local app hand-off only. A replacement
         // invite for this match can change only the hash, without reloading Pages.
         document.getElementById('open-app').href = 'rallyd://' + route[1] + '/' + route[2] + window.location.hash;

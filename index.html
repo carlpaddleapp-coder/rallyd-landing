@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+[hidden] { display: none !important; }
   :root{
     --ink:#0A0A0B; --ink2:#0E0E11; --surface:#151519; --surface2:#1C1C22;
     --line:rgba(255,255,255,.08); --line-green:rgba(57,255,20,.22);
@@ -220,7 +221,7 @@
       <h1>Score every rally.<br>Track every stat.</h1>
       <p class="lead">The racket-sports app built for your Apple Watch. Score tennis, padel, badminton, squash and pickleball from your wrist — then see who's <em>really</em> winning.</p>
       <div class="cta-row">
-        <a href="#download" class="btn">Coming to the App Store</a>
+        <a id="hero-download" href="https://apps.apple.com/app/id6777384063" class="btn">Get Rallyd on the App Store</a>
         <a href="#features" class="btn ghost">See what's inside</a>
       </div>
       <div class="sports">
@@ -410,10 +411,10 @@
   <div class="wrap">
     <div class="box reveal">
       <span class="eyebrow">Get Rallyd</span>
-      <h2>Coming soon to the App Store.</h2>
-      <p class="lead" style="margin:0 auto">Rallyd is on its way to iPhone and Apple Watch. Leave your email and we'll tell you the moment it's live.</p>
-      <div style="margin-top:26px"><a href="mailto:hello@rallyd.app?subject=Notify%20me%20when%20Rallyd%20launches" class="btn">Notify me at launch</a></div>
-      <div class="spots">iPhone &amp; Apple Watch · Free to play</div>
+      <h2 id="download-title">Get Rallyd</h2>
+      <p id="download-description" class="lead" style="margin:0 auto">iPhone &amp; Apple Watch · Free to play</p>
+      <div style="margin-top:26px"><a id="store-download" href="https://apps.apple.com/app/id6777384063" class="btn">Get Rallyd on the App Store</a></div>
+      <div class="spots" id="android-availability"></div>
     </div>
   </div>
 </section>
@@ -429,6 +430,8 @@
   </div>
 </footer>
 
+<script src="/ShareLinkStrings.js"></script>
+<script src="/HomeDownload.js"></script>
 <script>
   const nav=document.getElementById('nav');
   const onScroll=()=>nav.classList.toggle('scrolled',window.scrollY>12);

@@ -27,7 +27,7 @@ test('Android association contains the exact release and debug signers', () => {
   }]);
 });
 
-function render(pathname, hash = '', search = '') {
+function render(pathname, hash = '', search = '', userAgent = '') {
   const html = read('404.html');
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)];
   assert.equal(scripts.length, 1, 'one local inline script');
@@ -39,6 +39,7 @@ function render(pathname, hash = '', search = '') {
   const location = { pathname, hash, search };
   const listeners = new Map();
   runInNewContext(read('ShareLinkStrings.js') + '\n' + scripts[0][1], {
+    navigator: { userAgent },
     window: Object.freeze({ location, addEventListener: (name, callback) => listeners.set(name, callback) }),
     document: { title: '', getElementById: id => {
       assert.ok(elements.has(id), `known element: ${id}`);
@@ -118,4 +119,23 @@ test('claim invitations explain first-time account setup without requiring prior
 test('installation guidance tells guests to return to their invitation', () => {
   const { elements } = render('/m/example-match', '#invite=example-only');
   assert.match(elements.get('install-note').textContent, /Install the app, then return here and tap Open in Rallyd/);
+});
+
+
+test('Android invitation offers live tester guidance instead of the Apple download', () => {
+  const { elements } = render('/m/example-match', '#invite=example-only', '',
+    'Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 Chrome/130 Mobile Safari/537.36');
+  assert.equal(elements.get('apple-download')?.hidden, true);
+  assert.equal(elements.get('android-note')?.hidden, false);
+  assert.match(elements.get('android-note')?.textContent ?? '', /live Android tester pack/);
+  assert.match(elements.get('install-note').textContent, /reopen this invitation/);
+  assert.equal(elements.get('open-app').href, 'rallyd://m/example-match#invite=example-only');
+});
+
+test('iPhone invitation keeps the App Store download and account setup guidance', () => {
+  const { elements } = render('/m/example-match', '#invite=example-only', '',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15');
+  assert.equal(elements.get('apple-download')?.hidden, false);
+  assert.equal(elements.get('android-note')?.hidden, true);
+  assert.match(elements.get('install-note').textContent, /sign-in and account setup/);
 });
