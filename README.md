@@ -48,7 +48,7 @@ Ship this file alongside `404.html`. No third-party scripts are loaded.
 No dependencies, SDKs or app builds are needed:
 
 ```sh
-node --test tests/share-links.test.mjs
+node --test tests/*.test.mjs
 git diff --check
 ```
 
@@ -64,8 +64,8 @@ deployment to succeed in GitHub's Actions/Deployments view before checking live.
 Do not merge an unrelated Rallyd app PR to publish the site. No separate hosting
 account, DNS change or manual deployment command is needed.
 
-This PR is deliberately left unmerged. Live validators and the iPhone tap test
-below are **NOT RUN** against this change until Carl publishes it.
+Publication is separate from physical-device acceptance. The device checks below
+are **NOT RUN** unless explicitly recorded after the site is published.
 
 ## Verify after publishing
 
@@ -147,3 +147,24 @@ If the CDN check or the real-iPhone test still fails after accounting for caches
 and the device's open-in-browser preference, report it before calling links live.
 **Cloudflare Pages is the fallback only after a failed test and a later explicit
 decision.** No migration or Cloudflare preparation is included here.
+
+
+## Live downloads and Android invitation guidance (27 October 2026)
+
+Apple's public GB listing independently reports Rallyd 1.2, released 27 October.
+The home page now links to the actual App Store listing instead of the launch
+notification email. New wording is centralized in `ShareLinkStrings.js`;
+`HomeDownload.js` applies the platform-specific download guidance. Static links
+still reach the App Store when JavaScript is unavailable.
+
+Android visitors see private tester guidance instead of an Apple installation
+button, on both the home page and match/group fallback. Invited live testers
+must get the **live Android tester pack** from their inviter, install it, then
+reopen their original invitation and tap **Open in Rallyd**. A DEV pack accesses
+a different backend and cannot open live invitations. No APK is published on
+the public website. Desktop visitors can see both platform options.
+
+User-agent detection is a convenience, not authentication or verification of an
+installed app. The app handoff and credential handling are unchanged. All 21
+local tests cover the new download actions plus the existing route/privacy
+regressions; physical Android/iPhone handoff still requires tester acceptance.
