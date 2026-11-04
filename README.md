@@ -168,3 +168,26 @@ User-agent detection is a convenience, not authentication or verification of an
 installed app. The app handoff and credential handling are unchanged. All 21
 local tests cover the new download actions plus the existing route/privacy
 regressions; physical Android/iPhone handoff still requires tester acceptance.
+
+## Android Play policy draft — 4 November 2026 (unpublished)
+
+Local branch `chore/android-play-policy-draft` prepares Android/Google Play privacy
+and subscription wording, `delete-account.html`, and its home-footer link.
+Deletion requests go to `carl@rallyd.app`, explicitly selected by Carl. The page
+opens an email draft; no automatic email, account deletion or form submission
+occurs. Identity verification and fulfillment use the support process.
+
+The copy reflects the existing deletion planner: shared matches/competitions and
+a limited historical profile (uid, display name, creation date, deleted flag)
+remain without automatic expiry. Private fields and Google Play verification
+records are removed by the reviewed account-deletion code. This publication
+must be coordinated with the billing backend before purchases are enabled.
+
+Existing 21 tests pass; local HTML/mailto links and browser renders checked.
+This is not evidence of mailbox delivery, live publication or Google approval.
+The store listing/Data safety/billing preparation is in the parent workspace's
+`release-evidence-20261104/play-store-preparation.md`.
+
+**Do not push/merge/publish this branch until Carl explicitly approves these
+public changes.** Website-ownership approval covered only Google's verification
+file. No app bundle/version, signing file or association fingerprint is changed.
