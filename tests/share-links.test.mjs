@@ -7,6 +7,8 @@ const root = new URL('../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
 const release = 'DB:D2:1C:82:20:41:FE:69:E3:FE:27:3E:F7:C2:DB:62:93:13:8E:DF:95:CE:CD:56:41:59:EF:62:4C:8F:64:53';
 const debug = 'DD:31:67:CB:43:69:B7:91:43:52:EF:D7:FB:38:8A:39:DC:A8:0E:D0:D0:CC:B6:3D:66:6D:C4:A8:18:A2:BE:7D';
+// Current delivery certificate shown by Rallyd Ltd Play app4972957920697232625.
+const play = '84:19:EE:12:69:8B:EA:6C:04:08:26:18:81:87:DA:F1:CB:BC:62:44:56:A2:C7:39:FD:F9:BB:A0:F2:5D:2D:EA';
 
 test('Pages serves dot files without Jekyll filtering', () => {
   assert.ok(existsSync(new URL('.nojekyll', root)));
@@ -19,11 +21,11 @@ test('AASA has only the current iPhone identity and match/group paths', () => {
   });
 });
 
-test('Android association contains the exact release and debug signers', () => {
+test('Android association contains only the exact original, debug and Play signers', () => {
   assert.deepEqual(JSON.parse(read('.well-known/assetlinks.json')), [{
     relation: ['delegate_permission/common.handle_all_urls'],
     target: { namespace: 'android_app', package_name: 'app.rallyd.android',
-      sha256_cert_fingerprints: [release, debug] },
+      sha256_cert_fingerprints: [release, debug, play] },
   }]);
 });
 

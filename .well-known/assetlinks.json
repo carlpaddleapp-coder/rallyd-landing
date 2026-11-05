@@ -6,7 +6,8 @@
       "package_name": "app.rallyd.android",
       "sha256_cert_fingerprints": [
         "DB:D2:1C:82:20:41:FE:69:E3:FE:27:3E:F7:C2:DB:62:93:13:8E:DF:95:CE:CD:56:41:59:EF:62:4C:8F:64:53",
-        "DD:31:67:CB:43:69:B7:91:43:52:EF:D7:FB:38:8A:39:DC:A8:0E:D0:D0:CC:B6:3D:66:6D:C4:A8:18:A2:BE:7D"
+        "DD:31:67:CB:43:69:B7:91:43:52:EF:D7:FB:38:8A:39:DC:A8:0E:D0:D0:CC:B6:3D:66:6D:C4:A8:18:A2:BE:7D",
+        "84:19:EE:12:69:8B:EA:6C:04:08:26:18:81:87:DA:F1:CB:BC:62:44:56:A2:C7:39:FD:F9:BB:A0:F2:5D:2D:EA"
       ]
     }
   }

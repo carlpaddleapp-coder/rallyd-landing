@@ -192,3 +192,17 @@ Carl explicitly approved publication of these policy/terms/deletion pages and
 the home-footer link on 4 November 2026, after reviewing the draft and choosing
 the deletion inbox. Publication remains separate from app/store release approval.
 No app bundle/version, signing file or association fingerprint is changed.
+
+
+### Prepared Play signing association — 5 November 2026
+
+Unpublished branch `chore/android-play-signing-association` adds the current
+Rallyd Play delivery certificate to `.well-known/assetlinks.json`, preserving
+the two existing fingerprints, package and URL-handling relation. Source:
+Rallyd Ltd Play app4972957920697232625 → App signing → Digital Asset Links JSON.
+New SHA-256:
+`84:19:EE:12:69:8B:EA:6C:04:08:26:18:81:87:DA:F1:CB:BC:62:44:56:A2:C7:39:FD:F9:BB:A0:F2:5D:2D:EA`.
+This enables HTTPS app-link verification for the Play-signed phone build; it
+cannot by itself configure Google sign-in (Firebase OAuth needs the matching
+SHA-1) or prove installed link acceptance. Additional Play certificate rows
+require verification if used for delivery. No publication until Carl approves.
